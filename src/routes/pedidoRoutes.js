@@ -8,12 +8,14 @@ const { pedidoController } = require("../controllers/pedidoController");
  * @module pedidoRoutes
  * 
  * @description
- * - GET /pedidos -> lista todos os pedidos do banco de dados.
- * - POST /pedidos -> cria uma novo pedido e os seus itens com os dados enviados pelo cliente HTTP   
+ * -GET /pedidos -> lista todos os pedidos do banco de dados.
+ * -POST /pedidos -> cria uma novo pedido .
+ * -PUT /pedidos -> Atualizar pedido.
+ * -DELETE /pedidos -> Deletar um pedido.
  */
 router.get("/pedidos", pedidoController.listarPedidos);
 router.post("/pedidos", pedidoController.criarPedido);
-router.put("/pedidos", pedidoController.atualizaPedido);
-router.delete("/pedidos", pedidoController.deletarPedido);
+router.put("/pedidos/:idPedido", pedidoController.atualizaPedido);
+router.delete("/pedidos/:idPedido", pedidoController.deletarPedido);
 
 module.exports = {pedidoRoutes: router};

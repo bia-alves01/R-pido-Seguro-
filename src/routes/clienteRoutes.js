@@ -7,9 +7,9 @@ router.get("/clientes", clienteController.listarClientes);
 // POST /clientes -> Criar um novo cliente
 router.post("/clientes", clienteController.criarCliente);
 // PUT / clientes -> Atualizar informações do cliente ja existente
-router.put("/clientes", clienteController.atualizarCliente);
+router.put("/clientes/:idCliente", clienteController.atualizarCliente);
 // DELETE /clientes -> Deletar cliente
-router.delete("/clientes", clienteController.deletarCliente);
+router.delete("/clientes/:idCliente", clienteController.deletarCliente);
 
 //exportará o clienteRoutes
 module.exports = {clienteRoutes: router};

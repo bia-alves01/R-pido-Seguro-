@@ -4,7 +4,7 @@ const sql = require("mssql");
 const config = {
     user: 'mmodestto__SQLLogin_2',
     password: 'mtt8rvonql',
-    server: 'rapidoESeguroLogistica.mssql.somee.com',
+    server: 'rapidoesegurologistica.mssql.somee.com',
     database: 'rapidoESeguroLogistica',
     options: {
         encrypt: true,
