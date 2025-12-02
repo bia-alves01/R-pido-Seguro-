@@ -1,6 +1,21 @@
 const {sql, getConnection } = require(`../config/db`);
 
 const clienteModel = {
+
+    /**
+     * Criar um cliente novo
+     * 
+     * @async
+     * @function cadastrarCliente
+     * @returns {Promise<Array}Cadastrar um cliente novo
+     * @throws "mensagem": "Erro ao cadastrar cliente!"
+     * @param {*} nomeCliente 
+     * @param {*} cpfCliente 
+     * @param {*} telCliente 
+     * @param {*} emailCliente 
+     * @param {*} endCliente 
+     * 
+     */
     cadastrarCliente: async (nomeCliente, cpfCliente, telCliente, emailCliente, endCliente) => {
         try {
             const pool = await getConnection();
@@ -21,6 +36,13 @@ const clienteModel = {
             throw error;
         }
     },
+
+    /**
+     * @async 
+     * @function buscarUm
+     * @param {*} idCliente 
+     * @returns {Promise<Array} retorna uma lista com apenas um cliente
+     */
 
     buscarUm: async (idCliente) => {
         try {
@@ -77,14 +99,22 @@ const clienteModel = {
             throw error;
         }
     },
+
+    /**
+     * @async
+     * @function buscarTodos
+     * @returns {Promise<Array} Retorna uma lista com todos o clientes cadastrados
+     * @throws Mostra no console o erro
+     */
     buscarTodos: async ()=>{
         try {
             const pool = await getConnection();
 
-            let sql = 'SELECT * FROM Clientes';
+            let querySQL = 'SELECT * FROM Clientes';
 
             const result = await pool.request()
-            .query(sql);
+            .query(querySQL);
+
             return result.recordset;
 
         } catch (error) {
@@ -93,6 +123,18 @@ const clienteModel = {
         }
     },
 
+    /**
+     * @async
+     * @function atualizarCliente
+     * @param {*} idCliente 
+     * @param {*} nomeCliente 
+     * @param {*} cpfCliente 
+     * @param {*} telCliente 
+     * @param {*} emailCliente 
+     * @param {*} endCliente 
+     * @returns {Promise,Array} Retorna os dados do cliente atualizado 
+     * @throws Mostra no console o erro e propaga o erro caso a atualização falhe
+     */
     atualizarCliente: async (idCliente, nomeCliente, cpfCliente, telCliente, emailCliente, endCliente) => {
         try {
             const pool = await getConnection();
@@ -122,6 +164,11 @@ const clienteModel = {
         }
     },
 
+    /**
+     * @async
+     * @function deletarCliente
+     * @param {*} idCliente 
+     */
 
     deletarCliente: async(idCliente) => {
         const pool = await getConnection();

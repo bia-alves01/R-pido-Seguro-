@@ -2,9 +2,9 @@ const sql = require("mssql");
 
 //O banco de dados que fará a conexão
 const config = {
-    user: 'mmodestto__SQLLogin_2',
-    password: 'mtt8rvonql',
-    server: 'rapidoesegurologistica.mssql.somee.com',
+    user: 'sa',
+    password: '123456789',
+    server: 'localhost',
     database: 'rapidoESeguroLogistica',
     options: {
         encrypt: true,

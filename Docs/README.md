@@ -38,6 +38,12 @@
     "endCliente": "logradouro, número, bairro, cidade, estado, CEP" -- endereço Atual
 }
 ```
+- **Params**:
+```
+{
+    Id do Cliente
+}
+```
 - **Reponse**: 
 ```
 {
@@ -46,9 +52,11 @@
 ```
 ### DELETE /Clientes
 - **Descrição**: Deletar cliente
-- **Body**:
+- **Params**:
 ```
-({ Cliente deletado com sucesso!})
+{
+    Id do Cliente
+}
 ```
 
 - **Reponse**: 
@@ -58,7 +66,7 @@
 }
 ```
 
-### Produtos
+### Pedidos
 
 #### GET /Pedidos
 - **Descrição**: Obtém uma lista dos pedidos
@@ -97,6 +105,12 @@
     "valorKg" = 00,00 , -- valor atual
 }
 ````
+-**Params**:
+```
+{
+    Id do cliente
+}
+```
 - **Response**:
 ```
 {
@@ -106,6 +120,12 @@
 
 #### DELETE /Pedidos
 - **Descrição**: Deletar pedido 
+-**Params**:
+```
+{
+    Id do Cliente
+}
+```
 - **Response**:
 ````
 {

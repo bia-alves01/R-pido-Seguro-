@@ -1,12 +1,21 @@
 const { sql, getConnection } = require("../config/db");
 
 const entregaModel = {
+    /**
+     * Buscar todoas as entregas e suas respctivas informações.
+     * 
+     * @async
+     * @function buscarTodos
+     * @returns {Promise<Array} Retornar uam lista com todos as entregas.
+     * @throws Mostrar no console o erro e propaga o erro caso a busca falhe.
+     * 
+     */
 
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
 
-            const querySQL = 'SELECT * FROM Entregas';
+            const querySQL = 'SELECT * FROM Entrega';
 
             const result = await pool.request()
             .query(querySQL);
@@ -19,43 +28,18 @@ const entregaModel = {
         }
     },
 
-    criarEntrega: async (valorDistancia, valorPeso, acrescimo, desconto, taxaExtra, valorFinal, statusEntrega ) => {
-        const pool = await getConnection();
-        const transaction = new sql.Transaction(pool);
-        await transaction.begin();
 
-        try {
-            const query = `
-                INSERT INTO Entregas
-                    (valorDistancia, valorPeso, acrescimo, desconto, taxaExtra, valorFinal, statusEntrega)
-                VALUES
-                    (@valorDistancia, @valorPeso, @acrescimo, @desconto, @taxaExtra, @valorFinal, @statusEntrega)
-            `;
-
-            const result = await transaction.request()
-                .input("valorDistancia", sql.Decimal(10, 2), valorDistancia)
-                .input("valorPeso", sql.Decimal(10, 2), valorPeso)
-                .input("acrescimo", sql.Decimal(10, 2), acrescimo )
-                .input("desconto", sql.Decimal(10, 2), desconto )
-                .input("taxaExtra", sql.Decimal(10, 2), taxaExtra )
-                .input("valorFinal", sql.Decimal(10, 2), valorFinal)
-                .input("statusEntrega", sql.VarChar(20), statusEntrega)
-                .query(query);
-
-            return result.recordset;
-
-        } catch (error) {
-            await transaction.rollback();
-            console.error("Erro ao criar entrega:", error);
-            throw error;
-        }
-    },
-
+    /**
+     * @async
+     * @function buscarUm
+     * @param {*} idEntrega 
+     * @returns Retornar um lista com apenas uma entre, atraves do id da entrega
+     */
     buscarUm: async (idEntrega) => {
         try {
             const pool = await getConnection();
 
-            const query = ` SELECT * FROM Entregas WHERE idEntrega = @idEntrega`;
+            const query = ` SELECT * FROM Entrega WHERE idEntrega = @idEntrega`;
 
             const result = await pool.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
@@ -69,64 +53,35 @@ const entregaModel = {
         }
     },
 
- 
-    atualizarEntrega: async (idEntrega, valorDistancia, valorPeso, acrescimo, desconto, taxaExtra, valorFinal, statusEntrega) => {
-        const pool = await getConnection();
+    /**
+     * @async
+     * @function deletarEntrega
+     * @param {*} idEntrega 
+     * @returns "mensagem": "entrega deletado com sucesso!"
+     */
+    deletarEntrega: async (idEntrega) => {
 
+        const pool = await getConnection();
         const transaction = new sql.Transaction(pool);
+        await transaction.begin();
 
         try {
-            const query = `
-                UPDATE Entregas
-                SET 
-                    valorDistancia = @valorDistancia,
-                    valorPeso = @valorPeso,
-                    acrescimo = @acrescimo,
-                    desconto = @desconto,
-                    taxaExtra = @taxaExtra,
-                    valorFinal = @valorFinal,
-                    statusEntrega = @statusEntrega
-                WHERE idEntrega = @idEntrega
-            `;
+            //Deletar entrega
+            const querySQL = `DELETE FROM Entrega WHERE idEntrega = @idEntrega`;
 
             await transaction.request()
-                .input("valorDistancia", sql.Decimal(10,2), valorDistancia)
-                .input("valorPeso", sql.Decimal(10,2), valorPeso)
-                .input("acrescimo", sql.Decimal(10,2), acrescimo)
-                .input("desconto", sql.Decimal(10,2), desconto)
-                .input("taxaExtra", sql.Decimal(10,2), taxaExtra)
-                .input("valorFinal", sql.Decimal(10,2), valorFinal)
-                .input("statusEntrega", sql.VarChar(20), statusEntrega)
-                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
-                .query(query);
-
-
-        } catch (error) {
-            await transaction.rollback();
-            console.error("Erro ao atualizar entrega:", error);
-            throw error;
-        }
-    },
-
-    
-    deletarEntrega: async (idEntrega) => {
-        const pool = await getConnection();
-
-        try {
-            const querySQL = `DELETE FROM Entregas WHERE idEntrega = @idEntrega`;
-
-            await pool.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
 
-            return res.status(200).json(`Entrega deletada com sucesso!`);
+                await transaction.commit();
+
+            //return res.status(200).json(`Entrega deletada com sucesso!`);
 
         } catch (error) {
-            await transaction.rollback();
-            console.error("Erro ao deletar entrega:", error);
+            console.error(`Erro ao deletar entrega:`, error);
             throw error;
         }
     }
-};
+}
 
 module.exports = { entregaModel };

@@ -10,10 +10,11 @@ const { entregaController } = require("../controllers/entregaController");
 
   - GET /entregas -> Listar todas sa entregas 
   - POST/ entregas -> Criar uma nova entrega 
-  -DELETE /entregas -> Deletar uma entrega 
+  -PUT /entregas/idPedido -> Atualizar informações da entrega
+  -DELETE /entregas/idPedido -> Deletar uma entrega 
  */
 
-router.get("/entregas", entregaController.listarEntregas);
-router.get("/entregas/:idEntrega", entregaController.buscarEntregaPorId);
-router.post("/entregas", entregaController.criarEntrega);
+router.get("/entregas", entregaController.listarEntrega);
 router.delete("/entregas/:idEntrega", entregaController.deletarEntrega);
+
+module.exports = {entregaRoutes:router};

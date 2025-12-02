@@ -30,8 +30,8 @@ const clienteController = {
         try {
             const {nomeCliente, cpfCliente, telCliente, emailCliente, endCliente} = req.body;
 
-            if(nomeCliente == undefined || cpfCliente == undefined || telCliente == undefined || emailCliente == undefined || endCliente == undefined){
-                return res.status(400).json(`Campos obrigatórios não respondidos!`);
+            if(nomeCliente == undefined|| cpfCliente == undefined || telCliente == undefined || emailCliente == undefined || endCliente == undefined ){
+                return res.status(400).json({erro:`Campos obrigatórios não respondidos!`});
             }
 
             const result = await clienteModel.buscarPorCPF(cpfCliente);
