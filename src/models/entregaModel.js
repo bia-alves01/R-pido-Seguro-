@@ -6,7 +6,7 @@ const entregaModel = {
      * 
      * @async
      * @function buscarTodos
-     * @returns {Promise<Array} Retornar uam lista com todos as entregas.
+     * @returns {Promise<Array} Retornar uma lista com todos as entregas.
      * @throws Mostrar no console o erro e propaga o erro caso a busca falhe.
      * 
      */
@@ -15,6 +15,7 @@ const entregaModel = {
         try {
             const pool = await getConnection();
 
+            //Buscar todas as entregas dentro do banco de dados
             const querySQL = 'SELECT * FROM Entrega';
 
             const result = await pool.request()
@@ -30,15 +31,19 @@ const entregaModel = {
 
 
     /**
+     * Buscar apenas uma entrega específica.
+     * 
      * @async
      * @function buscarUm
      * @param {*} idEntrega 
-     * @returns Retornar um lista com apenas uma entre, atraves do id da entrega
+     * @returns Retornar um lista com apenas uma entrega, através do id da entrega.
+     * @throws Mostra no console o erro e divulga o erro caso não for possível buscar apenas uma entrega.
      */
     buscarUm: async (idEntrega) => {
         try {
             const pool = await getConnection();
 
+            //Buscar apenas uma entrega através do id
             const query = ` SELECT * FROM Entrega WHERE idEntrega = @idEntrega`;
 
             const result = await pool.request()
@@ -54,10 +59,13 @@ const entregaModel = {
     },
 
     /**
+     * Deletar a entrega 
+     * 
      * @async
      * @function deletarEntrega
-     * @param {*} idEntrega 
+     * @param {*} idEntrega - Id para identificar a entrega do produto.
      * @returns "mensagem": "entrega deletado com sucesso!"
+     * @throws Mostra no console o erro e divulga o erro caso não for possível deletar a entrega.
      */
     deletarEntrega: async (idEntrega) => {
 
@@ -66,14 +74,14 @@ const entregaModel = {
         await transaction.begin();
 
         try {
-            //Deletar entrega
-            const querySQL = `DELETE FROM Entrega WHERE idEntrega = @idEntrega`;
+            //Deletar entrega no banco de dados
+            let querySQL = `DELETE FROM Entrega WHERE idEntrega = @idEntrega`;
 
             await transaction.request()
                 .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
 
-                await transaction.commit();
+            await transaction.commit();
 
             //return res.status(200).json(`Entrega deletada com sucesso!`);
 

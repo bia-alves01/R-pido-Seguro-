@@ -3,15 +3,15 @@ const router = express.Router();
 const { entregaController } = require("../controllers/entregaController");
 
 /** 
-  Rotas relacionadas aos pedidos
-  @module entregaRoutes
- 
-  @description
-
-  - GET /entregas -> Listar todas sa entregas 
-  - POST/ entregas -> Criar uma nova entrega 
-  -PUT /entregas/idPedido -> Atualizar informações da entrega
-  -DELETE /entregas/idPedido -> Deletar uma entrega 
+ * Rotas relacionadas aos pedidos
+ * @module entregaRoutes
+ * 
+ * @description
+ * 
+ * - GET /entregas -> Listar todas sa entregas.
+ * - POST/ entregas -> Criar uma nova entrega. 
+ * - PUT /entregas/idPedido -> Atualizar informações da entrega.
+ * - DELETE /entregas/idPedido -> Deletar uma entrega identificada pelo ID. 
  */
 
 router.get("/entregas", entregaController.listarEntrega);

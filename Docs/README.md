@@ -38,12 +38,6 @@
     "endCliente": "logradouro, número, bairro, cidade, estado, CEP" -- endereço Atual
 }
 ```
-- **Params**:
-```
-{
-    Id do Cliente
-}
-```
 - **Reponse**: 
 ```
 {
@@ -52,13 +46,6 @@
 ```
 ### DELETE /Clientes
 - **Descrição**: Deletar cliente
-- **Params**:
-```
-{
-    Id do Cliente
-}
-```
-
 - **Reponse**: 
 ```
 {
@@ -77,13 +64,15 @@
 - **Body**: 
 ```
 {
-    'idPedido, 
-    idCliente, 
-    "dataPedido" = 0000-00-00, 
-    "distancia" = 00 KM, 
-    "pesoCarga" = 00 KG, 
-    "valorKm" = 00,00 , 
-    "valorKg" = 00,00 ,
+    "idCliente": "idCliente",
+    "dataPedido": "0000-00-00", 
+    "distancia": 00 KM, 
+    "pesoCarga": 00 KG, 
+    "valorKm": 00,00 , 
+    "valorKg": 00,00 ,
+    "tipoEntrega": "normal ou entrega",
+    "statusEntrega": "calculado, em transito, entregue, cancelado"
+
 }
 ```
 - **Response**: 
@@ -98,19 +87,16 @@
 - **Body**:
 ````
 {
+    "idCliente": "idCliente",
     "dataPedido" = 0000-00-00, -- data Atualizada
     "distancia" = 00 KM, -- distancia Atualixada
     "pesoCarga" = 00 KG, -- peso Atualizado
     "valorKm" = 00,00 , -- valor atual
     "valorKg" = 00,00 , -- valor atual
+    "tipoEntrega": "normal ou entrega", - tipo da entrega atualizado
+    "statusEntrega": "calculado, em transito, entregue, cancelado" - status da entrega atualizado
 }
 ````
--**Params**:
-```
-{
-    Id do cliente
-}
-```
 - **Response**:
 ```
 {
@@ -120,15 +106,24 @@
 
 #### DELETE /Pedidos
 - **Descrição**: Deletar pedido 
--**Params**:
-```
-{
-    Id do Cliente
-}
-```
 - **Response**:
 ````
 {
     message: "Pedidos deleta com sucesso!"
+}
+````
+
+### Entregas
+
+### GET /entregas
+- **Descrição**: Obtém uma lista das entregas
+- **Response**: Array das entregas
+
+#### DELETE /Pedidos
+- **Descrição**: Deletar entrega 
+- **Response**:
+````
+{
+    message: "Entrega deleta com sucesso!"
 }
 ````

@@ -11,10 +11,17 @@ const { sql, getConnection } = require("../config/db");
 
 const pedidoModel = {
 
+    /**
+     * @async
+     * @function buscarTodos
+     * @returns {Promise<Array} Retorna uma lista com todos os pedidos.
+     * @throws Mostrar no console o erro e divulga o erro caso a busca falhe.
+     */
     buscarTodos: async () => {
         try {
             const pool = await getConnection();
 
+            //Buscar todos os pedidos cadastrados no banco de dados
             const querySQL = `SELECT * FROM Pedidos`;
 
             const result = await pool.request()
@@ -28,9 +35,17 @@ const pedidoModel = {
         }
     },
 
+    /**
+     * @async
+     * @function buscarUm
+     * @param {*} idPedido - Id para identificar o pedido.
+     * @returns {Promise<Array} Retorna ums lista com um pedido específico.
+     * @throws Mostrar no console o erro e divulga o erro caso a busca falhe.
+     */
     buscarUm: async (idPedido) => {
         try {
             const pool = await getConnection();
+            //Buscar apenas um pedido através do id
             const querySQL = 'SELECT * FROM Pedidos WHERE idPedido = @idPedido';
 
             const result = await pool.request()
@@ -45,6 +60,26 @@ const pedidoModel = {
         }
     },
 
+    /**
+     * @async
+     * @function inserirPedido
+     * @param {*} idCliente - Id para identificar pedido.
+     * @param {*} dataPedido - Data que o pedido foi feito.
+     * @param {*} tipoEntrega - Tipo da entrega: normal ou urgente.
+     * @param {*} distancia - Distância do pedido (em KM).
+     * @param {*} pesoCarga - Peso da carga (em KG).
+     * @param {*} valorKm - Valor base do KM .
+     * @param {*} valorKg - Valor base do KG.
+     * @param {*} valorDistancia - Valor da distância (distancia*valorKm).
+     * @param {*} valorPeso - Valor do peso da carga (pesoCarga*valorKg).
+     * @param {*} acrescimo - Acresimo no valor final de 20% caso o tipo da entrega for urgente.
+     * @param {*} desconto - Desconto na compra caso o valor chega a mais de R$500,00.
+     * @param {*} taxaExtra - Taxa extra fixa de R$15,00 caso o peso da carga for maior de 50KG
+     * @param {*} valorFinal - Valor final da compra. 
+     * @param {*} statusEntrega - Status da entrega: calculado, em transito, entregue, cancelado.
+     * @returns {Promise<Array} Cadastrar um pedido novo. 
+     * @throws Mostra no console o erro e divulga o erro caso não for possível cadastrar o pedido.
+     */
     inserirPedido: async (idCliente, dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg, valorDistancia, valorPeso, acrescimo, desconto, taxaExtra, valorFinal, statusEntrega) => {
 
         const pool = await getConnection();
@@ -52,6 +87,8 @@ const pedidoModel = {
         await transaction.begin();
 
         try {
+
+            //Inserir informações do pedido dentro do banco de dados
             let querySQL = `
                INSERT INTO Pedidos (idCliente, dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg)
                OUTPUT INSERTED.idPedido
@@ -104,7 +141,27 @@ const pedidoModel = {
     },
 
 
-    atualizarPedido: async (idPedido, idCliente,dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg, acrescimo, desconto, taxaExtra, valorDistancia, valorPeso, valorFinal, statusEntrega, idEntrega) => {
+    /**
+     * @async
+     * @function atualizarPedido
+     * @param {*} idCliente - Id para identificar pedido.
+     * @param {*} dataPedido - Data que o pedido foi feito.
+     * @param {*} tipoEntrega - Tipo da entrega: normal ou urgente.
+     * @param {*} distancia - Distância do pedido (em KM).
+     * @param {*} pesoCarga - Peso da carga (em KG).
+     * @param {*} valorKm - Valor base do KM .
+     * @param {*} valorKg - Valor base do KG.
+     * @param {*} valorDistancia - Valor da distância (distancia*valorKm).
+     * @param {*} valorPeso - Valor do peso da carga (pesoCarga*valorKg).
+     * @param {*} acrescimo - Acresimo no valor final de 20% caso o tipo da entrega for urgente.
+     * @param {*} desconto - Desconto na compra caso o valor chega a mais de R$500,00.
+     * @param {*} taxaExtra - Taxa extra fixa de R$15,00 caso o peso da carga for maior de 50KG
+     * @param {*} valorFinal - Valor final da compra. 
+     * @param {*} statusEntrega - Status da entrega: calculado, em transito, entregue, cancelado.
+     * @returns {Promise<Array} Retorna os dados do pedido atualizado.
+     * @throws Mostra no console o erro e divulga o erro caso não for possível atualizar o pedido.
+     */
+    atualizarPedido: async (idPedido, idCliente, dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg, acrescimo, desconto, taxaExtra, valorDistancia, valorPeso, valorFinal, statusEntrega, idEntrega) => {
 
         const pool = await getConnection();
         const transaction = new sql.Transaction(pool);
@@ -113,7 +170,9 @@ const pedidoModel = {
         try {
 
             const pool = await getConnection();
+            
 
+            //Atualizar informações do pedido dentro do banco de dados
             let querySQL = `
              UPDATE Pedidos
              SET idCliente = @idCliente,
@@ -139,6 +198,7 @@ const pedidoModel = {
 
             //Atualizar entrega
 
+            //Atualizar as informações da entrega dentro do banco de dados
             //request da entrega
             querySQL =
                 `UPDATE Entrega
@@ -169,17 +229,27 @@ const pedidoModel = {
             await transaction.commit();
 
         } catch (error) {
+            await transaction.rollback();
             console.error(`Erro ao atualizar pedido:`, error);
             throw error;
         }
     },
 
-    deletarPedido: async (idPedido, idEntrega) => {
+    /**
+     * @async
+     * @function deletarPedido
+     * @param {*} idPedido - Id para identificar o pedido.
+     * @returns {Promise<Array} {mensagem: `Pedido deletado com sucesso!`}.
+     * @throws Mostra no console o erro e divulga o erro caso não for possível deletar o pedido.
+     */
+    deletarPedido: async (idPedido) => {
 
         const pool = await getConnection();
+        const transaction = new sql.Transaction(pool);
+        await transaction.begin();
 
         try {
-            //Deletar pedido       
+            //Deletar pedido no banco de dados   
             let querySQL = `
             DELETE FROM Pedidos
             WHERE idPedido = @idPedido
@@ -189,9 +259,12 @@ const pedidoModel = {
                 .input("idPedido", sql.UniqueIdentifier, idPedido)
                 .query(querySQL);
 
-            return res.status(200).json(`Pedido deletado com sucesso!`);
+            await transaction.commit();
+
+            //return res.status(200).json(`Pedido deletado com sucesso!`);
 
         } catch (error) {
+            await transaction.rollback();
             console.error(`Erro ao deletar pedido:`, error);
             throw error;
         }

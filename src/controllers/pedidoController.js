@@ -16,6 +16,19 @@ const pedidoController = {
     listarPedidos: async (req, res) => {
         try {
 
+            const { idPedido } = req.params;
+
+            //Listar apenas um pedido
+            if (idPedido) {
+                if (idPedido.length != 36) {
+                    return res.status(400).json({ erro: 'id do pedido inválido' });
+                }
+
+                let pedido = await pedidoModel.buscarUm(idPedido);
+                res.status(200).json(pedido);
+            }
+
+            //Listar todos os pedidos
             const pedidos = await pedidoModel.buscarTodos();
 
             res.status(200).json(pedidos);
@@ -26,6 +39,14 @@ const pedidoController = {
         }
     },
 
+    /**
+     * @async
+     * @function criarPedido
+     * @param {*} req - Objeto da requisição (recebido do cliente HTTP)
+     * @param {*} res - Objeto da resposta (enviado ao cliente HTTP)
+     * @returns {Promise<Array} {mensagem: `Pedido criado com sucesso!`}.
+     * @throws Mostra no console e retorna erro 500  se ocorrer falha ao cirar o pedido.
+     */
     criarPedido: async (req, res) => {
         try {
             //Criar pedido
@@ -35,10 +56,12 @@ const pedidoController = {
                 return res.status(400).json({ Erro: "Campos obrigatórios não preenchidos!" });
             }
 
+            //Verificar se id é válido
             if (idCliente.length != 36) {
                 return res.status(400).json({ Erro: "Id do Cliente inválido!" });
             }
 
+            //Buscar apenas o cliente identificado pelo id
             const cliente = await clienteModel.buscarUm(idCliente);
 
             if (!cliente || cliente.length != 1) {
@@ -122,6 +145,14 @@ const pedidoController = {
         }
     },
 
+    /**
+     * @async
+     * @function atualizarPedido
+     * @param {*} req - Objeto da requisição (recebido do cliente HTTP)
+     * @param {*} res - Objeto da resposta (enviado ao cliente HTTP)
+     * @returns Retorna os dados do pedido atualizado.
+     * @throws Mostra no console e retorna erro 500  se ocorrer falha ao atualizar o pedido.
+     */
     atualizaPedido: async (req, res) => {
         try {
             const { idPedido } = req.params;
@@ -139,7 +170,9 @@ const pedidoController = {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
+
             //Atualizar entrega 
+
             statusEntregaDefault = "calculado";
             if (statusEntrega) {
                 if (statusEntrega.toLowerCase() != "calculado" && statusEntrega.toLowerCase() != "entregue" && statusEntrega.toLowerCase() != "calculado" && statusEntrega.toLowerCase() != "em transito") {
@@ -150,7 +183,11 @@ const pedidoController = {
 
             const pedidoAtual = pedido[0];
 
+            console.log(pedido);
 
+
+
+            //Infromações atualizadas
             const idClienteAtualizado = idCliente ?? pedidoAtual.idCliente;
             const dataPedidoAtualizado = dataPedido ?? pedidoAtual.dataPedido;
             const tipoEntregaAtualizado = tipoEntrega ?? pedidoAtual.tipoEntrega;
@@ -158,8 +195,8 @@ const pedidoController = {
             const pesoCargaAtualizada = pesoCarga ?? pedidoAtual.pesoCarga;
             const valorKmAtualizado = valorKm ?? pedidoAtual.valorKm;
             const valorKgAtualizado = valorKg ?? pedidoAtual.valorKg;
-            const statusEntregaAtualizado = statusEntrega ?? pedidoAtual.statusEntrega;
-
+            const statusEntregaAtualizado = statusEntrega ?? entregaAntigo?.[0]?.statusEntrega ?? "calculado";
+            //"...entregaAntigo?.[0]?.statusEntrega ... "?." impede o erro
 
             const valorDistanciaAtualizado = distanciaAtualizada * valorKgAtualizado;
             const valorPesoAtualizado = pesoCargaAtualizada * valorKmAtualizado;
@@ -201,7 +238,7 @@ const pedidoController = {
                 valorDistanciaAtualizado,
                 valorPesoAtualizado,
                 valorFinalAtualizado,
-                statusEntregaAtualizado
+                statusEntregaAtualizado,
             );
 
             res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
@@ -213,6 +250,14 @@ const pedidoController = {
     },
 
 
+    /**
+     * @async
+     * @function deletarPedido
+     * @param {*} req - Objeto da requisição (recebido do cliente HTTP)
+     * @param {*} res Objeto da resposta (enviado ao cliente HTTP)
+     * @returns {Promise<Array} {mensagem: `Pedido deltado com suceso!`}.
+     * @throws Mostra no console e retorna erro 500  se ocorrer falha ao deletar o pedido.
+     */
     deletarPedido: async (req, res) => {
         try {
             //Deletar pedido
@@ -222,19 +267,23 @@ const pedidoController = {
                 return res.status(400).json({ erro: "ID do pedido inválido!" });
             }
 
+            //Buscar apenas um pedido
             const pedido = await pedidoModel.buscarUm(idPedido);
 
+            //Verificar se o pedido existe/ se o id é válido
             if (!pedido || pedido.length === 0) {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
+            //Deletar pedido
             await pedidoModel.deletarPedido(idPedido);
 
             res.status(200).json({ message: 'Pedido deletado com sucesso!' });
 
         } catch (error) {
             console.error("Erro ao deletar pedido:", error);
-            res.status(500).json({ erro: "Erro interno ao deletar pedido!", errorMessage: error.message});
+            throw error;
+            //res.status(500).json({ erro: "Erro interno ao deletar pedido!", errorMessage: error.message});
         }
     }
 
