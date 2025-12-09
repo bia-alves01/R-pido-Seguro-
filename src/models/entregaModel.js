@@ -19,7 +19,7 @@ const entregaModel = {
             const querySQL = 'SELECT * FROM Entrega';
 
             const result = await pool.request()
-            .query(querySQL);
+                .query(querySQL);
 
             return result.recordset;
 
@@ -54,6 +54,25 @@ const entregaModel = {
 
         } catch (error) {
             console.error("Erro ao buscar entrega por ID:", error);
+            throw error;
+        }
+    },
+
+    buscarPorIdPedido: async (idPedido) => {
+        try {
+            const pool = await getConnection();
+
+            //Buscar apenas uma entrega através do id
+            const query = ` SELECT * FROM Entrega WHERE idPedido = @idPedido`;
+
+            const result = await pool.request()
+                .input("idPedido", sql.UniqueIdentifier, idPedido)
+                .query(query);
+
+            return result.recordset;
+
+        } catch (error) {
+            console.error("Erro ao buscar entrega por idPedido:", error);
             throw error;
         }
     },

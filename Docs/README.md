@@ -2,11 +2,15 @@
 
 ### Clientes 
 
-#### GET /cliente
-- **Descrição**: Obtém uma lista de clientes ja cadastrados
+#### GET /clientes
+- **Descrição**: Obtém uma lista de todos os clientes já cadastrados
+- **Reponse**: Array dos clientes
+
+### GET /clientes?idCliente=idCliente
+- **Descrição**: Obtém uma lista de apenas um cliente 
 - **Reponse**: Array do cliente
 
-#### POST /cliente
+#### POST /clientes
 - **Descrição**: Criar um novo cliente
 - **Body**:
 ```
@@ -26,7 +30,7 @@
 }
 ```
 
-#### PUT /Clientes
+#### PUT /Clientes/idCliente
 - **Descrição**: Atualizar cliente já existente
 - **Body**: 
 ```
@@ -44,7 +48,7 @@
     "message": "Cliente atualizado com sucesso!"
 }
 ```
-### DELETE /Clientes
+### DELETE /Clientes/idCliente
 - **Descrição**: Deletar cliente
 - **Reponse**: 
 ```
@@ -82,7 +86,7 @@
 }
 ```
 
-#### PUT /Pedidos
+#### PUT /Pedidos/idPedido
 - **Descrição**: Atualizar informações dos pedidos
 - **Body**:
 ````
@@ -104,7 +108,7 @@
 }
 ```
 
-#### DELETE /Pedidos
+#### DELETE /Pedidos/idPedido
 - **Descrição**: Deletar pedido 
 - **Response**:
 ````
@@ -119,7 +123,7 @@
 - **Descrição**: Obtém uma lista das entregas
 - **Response**: Array das entregas
 
-#### DELETE /Pedidos
+#### DELETE /Pedidos/idEntrega
 - **Descrição**: Deletar entrega 
 - **Response**:
 ````

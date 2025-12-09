@@ -56,7 +56,7 @@ const entregaController = {
                 return res.status(400).json({ erro: 'id da entrega inválido' });
             }
 
-            //Deletar a entrega
+
             await entregaModel.deletarEntrega(idEntrega);
 
             res.status(200).json({ message: 'Entrega deletada com sucesso!' });

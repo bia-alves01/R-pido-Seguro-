@@ -12,6 +12,7 @@ const {clienteController} = require("../controllers/clienteController");
  * -PUT /clientes/idClientes -> Atualizar informações do cliente.
  * -DELETE /clientes/idClientes -> Deletar um cliente identificado pelo ID.
  */
+
 router.get("/clientes", clienteController.listarClientes);
 router.post("/clientes", clienteController.criarCliente);
 router.put("/clientes/:idCliente", clienteController.atualizarCliente);

@@ -60,6 +60,24 @@ const pedidoModel = {
         }
     },
 
+    buscarPorIdCliente: async (idCliente) => {
+        try {
+            const pool = await getConnection();
+            //Buscar apenas um pedido através do id
+            const querySQL = 'SELECT * FROM Pedidos WHERE idCliente = @idCliente';
+
+            const result = await pool.request()
+                .input("idCliente", sql.UniqueIdentifier, idCliente)
+                .query(querySQL);
+            console.log(result.recordset);
+            return result.recordset;
+
+        } catch (error) {
+            console.error("Erro ao buscar o pedido por idCliente:", error);
+            throw error;
+        }
+    },
+
     /**
      * @async
      * @function inserirPedido
@@ -161,7 +179,7 @@ const pedidoModel = {
      * @returns {Promise<Array} Retorna os dados do pedido atualizado.
      * @throws Mostra no console o erro e divulga o erro caso não for possível atualizar o pedido.
      */
-    atualizarPedido: async (idPedido, idCliente, dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg, acrescimo, desconto, taxaExtra, valorDistancia, valorPeso, valorFinal, statusEntrega, idEntrega) => {
+    atualizarPedido: async (idPedido, idCliente, dataPedido, tipoEntrega, distancia, pesoCarga, valorKm, valorKg, acrescimo, desconto, taxaExtra, valorDistancia, valorPeso, valorFinal, statusEntrega) => {
 
         const pool = await getConnection();
         const transaction = new sql.Transaction(pool);
@@ -169,8 +187,10 @@ const pedidoModel = {
 
         try {
 
-            const pool = await getConnection();
-            
+            // const pool = await getConnection();
+            // const transaction = new sql.Transaction(pool);
+            // await transaction.begin();
+
 
             //Atualizar informações do pedido dentro do banco de dados
             let querySQL = `
@@ -202,8 +222,7 @@ const pedidoModel = {
             //request da entrega
             querySQL =
                 `UPDATE Entrega
-                SET idPedido = @idPedido,
-                    valorDistancia = @valorDistancia,
+                SET valorDistancia = @valorDistancia,
                     valorPeso = @valorPeso,
                     acrescimo = @acrescimo,
                     desconto = @desconto,
@@ -211,7 +230,7 @@ const pedidoModel = {
                     valorFinal = @valorFinal,
                     statusEntrega = @statusEntrega
 
-                WHERE idEntrega = @idEntrega
+                WHERE idPedido = @idPedido
             `;
 
             await transaction.request()
@@ -223,7 +242,6 @@ const pedidoModel = {
                 .input("taxaExtra", sql.Decimal(10, 2), taxaExtra)
                 .input("valorFinal", sql.Decimal(10, 2), valorFinal)
                 .input("statusEntrega", sql.VarChar(11), statusEntrega)
-                .input("idEntrega", sql.UniqueIdentifier, idEntrega)
                 .query(querySQL);
 
             await transaction.commit();
@@ -260,11 +278,10 @@ const pedidoModel = {
                 .query(querySQL);
 
             await transaction.commit();
-
             //return res.status(200).json(`Pedido deletado com sucesso!`);
 
         } catch (error) {
-            await transaction.rollback();
+            //await transaction.rollback();
             console.error(`Erro ao deletar pedido:`, error);
             throw error;
         }

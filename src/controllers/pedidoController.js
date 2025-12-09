@@ -170,22 +170,40 @@ const pedidoController = {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
+            const entregaAntiga = await entregaModel.buscarPorIdPedido(idPedido);
+
 
             //Atualizar entrega 
 
-            statusEntregaDefault = "calculado";
+            // const pedidoAntigo = pedido[0];
+            //const entregaAntigo = await entregaModel.buscarUm(idPedido);
+
+            if (idCliente) {
+                if (idCliente.length !== 36) {
+                    return res.status(400).json({ erro: "ID do cliente inválido!" });
+                }   
+
+                const cliente = await clienteModel.buscarUm(idCliente);
+
+                if (!cliente || cliente.length !== 1) {
+                    return res.status(404).json({ erro: "Cliente não encontrado!" });
+                }
+            }
+
+
+            //Verificação se cliente existe 
+
+            let statusEntregaAtualizado = entregaAntiga[0].statusEntrega;
             if (statusEntrega) {
                 if (statusEntrega.toLowerCase() != "calculado" && statusEntrega.toLowerCase() != "entregue" && statusEntrega.toLowerCase() != "calculado" && statusEntrega.toLowerCase() != "em transito") {
                     return res.status(400).json({ erro: "status entrega inválido " });
                 }
-                statusEntregaDefault = statusEntrega;
+                statusEntregaAtualizado = statusEntrega;
             }
 
             const pedidoAtual = pedido[0];
 
-            console.log(pedido);
-
-
+            //console.log(pedido);
 
             //Infromações atualizadas
             const idClienteAtualizado = idCliente ?? pedidoAtual.idCliente;
@@ -195,7 +213,6 @@ const pedidoController = {
             const pesoCargaAtualizada = pesoCarga ?? pedidoAtual.pesoCarga;
             const valorKmAtualizado = valorKm ?? pedidoAtual.valorKm;
             const valorKgAtualizado = valorKg ?? pedidoAtual.valorKg;
-            const statusEntregaAtualizado = statusEntrega ?? entregaAntigo?.[0]?.statusEntrega ?? "calculado";
             //"...entregaAntigo?.[0]?.statusEntrega ... "?." impede o erro
 
             const valorDistanciaAtualizado = distanciaAtualizada * valorKgAtualizado;
@@ -206,7 +223,7 @@ const pedidoController = {
             let valorFinalAtualizado = valorBaseAtualizado;
             let acrescimoAtualizado = 0;
 
-            if (tipoEntregaAtualizado == "urgente".toLocaleLowerCase) {
+            if (tipoEntregaAtualizado.toLocaleLowerCase() == "urgente") {
                 acrescimoAtualizado = valorBaseAtualizado * 0.20;
                 valorFinalAtualizado = valorFinalAtualizado + acrescimoAtualizado;
             }
@@ -238,9 +255,9 @@ const pedidoController = {
                 valorDistanciaAtualizado,
                 valorPesoAtualizado,
                 valorFinalAtualizado,
-                statusEntregaAtualizado,
+                statusEntregaAtualizado
             );
-
+            
             res.status(200).json({ mensagem: "Pedido atualizado com sucesso!" });
 
         } catch (error) {
@@ -275,15 +292,22 @@ const pedidoController = {
                 return res.status(404).json({ erro: "Pedido não encontrado!" });
             }
 
+            //Caso pedido esteja ainda tenha alguma entrega cadastrada, não será possível deletar o pedido
+            const entregas = entregaModel.buscarPorIdPedido(idPedido);
+
+            if (entregas.length > 0) {
+                return res.status(409).json({ erro: "Pedido com entregas cadastradas, não é possível deletar!" });
+            }
+
             //Deletar pedido
             await pedidoModel.deletarPedido(idPedido);
 
             res.status(200).json({ message: 'Pedido deletado com sucesso!' });
 
         } catch (error) {
-            console.error("Erro ao deletar pedido:", error);
+            console.error("Erro interno ao deletar pedido!", error);
+            res.status(500).json({ erro: "Erro ao deletar pedido!", errorMessage: error.message});
             throw error;
-            //res.status(500).json({ erro: "Erro interno ao deletar pedido!", errorMessage: error.message});
         }
     }
 

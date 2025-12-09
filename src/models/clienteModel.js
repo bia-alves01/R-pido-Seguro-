@@ -193,9 +193,8 @@ const clienteModel = {
      */
 
     deletarCliente: async(idCliente) => {
-        const pool = await getConnection();
-
         try {
+            const pool = await getConnection();
 
             //Deletar cliente do banco de dados
             const querySQL = `
@@ -206,9 +205,10 @@ const clienteModel = {
             await pool.request()
                 .input("idCliente", sql.UniqueIdentifier, idCliente)
                 .query(querySQL);
+            
+            // res.status(200).json(`Cliente deletado com sucesso!`);
 
         } catch (error) {
-            await transaction.rollback();
             console.error("Erro ao deletar cliente:", error);
             throw error;
         }
